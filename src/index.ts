@@ -38,7 +38,7 @@ async function LoadCmd() {
 
     for (const file of commandFiles) {
       const filePath = path.join(folderPath, file);
-      const commandModule = await import(pathToFileURL(filePath).href);
+      const commandModule = await require(filePath);
       const command = commandModule.default;
 
       if ("data" in command && "execute" in command) {
@@ -59,7 +59,7 @@ async function LoadCmd() {
 
   for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
-    const eventModule = await import(pathToFileURL(filePath).href);
+    const eventModule = await require(filePath)
     const event = eventModule.default;
 
     if ("name" in event && typeof event.execute === "function") {

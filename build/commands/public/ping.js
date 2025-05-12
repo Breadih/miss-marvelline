@@ -11,6 +11,5 @@ exports.default = new _newCommand_1.default({
         .setDescription(`Pong!`),
     async execute(interaction) {
         await interaction.reply(`Pong!`);
-    },
-    category: "admin"
+    }
 });

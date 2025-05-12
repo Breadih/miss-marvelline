@@ -7,6 +7,5 @@ export default new Command({
     .setDescription(`Pong!`),
     async execute(interaction) {
         await interaction.reply(`Pong!`)
-    },
-    category: "admin"
+    }
 })
