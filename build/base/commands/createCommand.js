@@ -7,7 +7,7 @@ class Command {
     constructor(options) {
         this.data = options.data;
         this.execute = options.execute;
-        this.category = options.category ?? 'admin';
+        this.category = options.category ?? 'public';
     }
 }
 exports.default = Command;

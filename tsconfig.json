@@ -17,7 +17,8 @@
     "baseUrl": "./src",
     "paths": {
       "#newCommand": ["./base/commands/createCommand.ts"],
-      "#loadCommands": ["./base/services/LoadCommands.ts"]
+      "#loadCommands": ["./base/services/LoadCommands.ts"],
+      "#colours": ["./base/colours.ts"]
     }
   },
   "include": ["src"],

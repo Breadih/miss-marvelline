@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node --env-file=.env .",
     "dev": "tsx src/index.ts",
-    "build": "tsc",
+    "build": "rmdir /s /q build && tsc && echo Successfully created a new Build.",
     "dev:watch": "tsx --watch --env-file=.env src/index.ts",
     "start:watch": "node --watch --env-file=.env ."
   },
@@ -36,6 +36,9 @@
     ],
     "#loadCommands": [
       "./build/base/services/LoadCommands.js"
+    ],
+    "#colours": [
+      "./build/base/colours.js"
     ]
   }
 }

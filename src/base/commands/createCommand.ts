@@ -20,6 +20,6 @@ export default class Command {
   constructor(options: CommandOptions) {
     this.data = options.data;
     this.execute = options.execute;
-    this.category = options.category ?? 'admin';
+    this.category = options.category ?? 'public';
   }
 }

@@ -8,7 +8,6 @@ const node_path_1 = __importDefault(require("node:path"));
 const discord_js_1 = require("discord.js");
 const dotenv_1 = __importDefault(require("dotenv"));
 const _loadCommands_1 = __importDefault(require("#loadCommands"));
-const consola_1 = __importDefault(require("consola"));
 dotenv_1.default.config();
 const client = new discord_js_1.Client({
     intents: [
@@ -45,7 +44,7 @@ async function LoadCmd() {
         }
     }
     // Load events from /events
-    const eventsPath = node_path_1.default.join(__dirname, "events");
+    const eventsPath = node_path_1.default.join(__dirname, "base", "events");
     const eventFiles = node_fs_1.default
         .readdirSync(eventsPath)
         .filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
@@ -68,10 +67,5 @@ async function LoadCmd() {
 }
 (0, _loadCommands_1.default)();
 LoadCmd();
-client.on('ready', () => {
-    if (client.user) {
-        consola_1.default.success(`Logged in as ${client.user.tag}`);
-    }
-});
 // Log in to Discord
 client.login(process.env.Token);

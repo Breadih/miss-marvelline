@@ -1,41 +1,54 @@
-import fs from "node:fs";
+import {
+  REST,
+  Routes,
+  type RESTPostAPIChatInputApplicationCommandsJSONBody,
+} from "discord.js";
 import path from "node:path";
-import { REST, Routes, type RESTPostAPIChatInputApplicationCommandsJSONBody } from "discord.js";
-import { pathToFileURL } from "url";
-import log from "consola";
+import { readdirSync } from "node:fs";
 
 export default async function loadCommands() {
   const publicCommands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
   const adminCommands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
 
-  const commandsPath = path.join(__dirname, "..", "..", "commands", "public");
-  const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
+  const folders = ["public", "admin"];
 
-  for (const file of commandFiles) {
-    const compiledFilePath = path.join(commandsPath, file);
+  for (const folder of folders) {
+    const commandsPath = path.join(__dirname, "..", "..", "commands", folder);
+    const commandFiles = readdirSync(commandsPath).filter(
+      (file) => file.endsWith(".ts") || file.endsWith(".js")
+    );
 
-    try {
-      // Use require to load compiled JS files
-      const commandModule = await require(compiledFilePath); // Using require for JS compatibility
+    for (const file of commandFiles) {
+      const filePath = path.join(commandsPath, file.replace(/\.ts$/, ".js")); // Convert .ts to .js for compiled code
+      console.log(`Attempting to load command from: ${filePath}`); // Log the file path for debugging
+
+      let commandModule;
+      try {
+        // Require the compiled JavaScript file
+        commandModule = require(filePath);
+      } catch (error) {
+        console.error(`Error loading command from ${filePath}:`, error);
+        continue; // Skip this command if it fails to load
+      }
+
       const command = commandModule.default || commandModule;
 
+      // Debugging output: Check if 'command.data' exists
+      console.log(`Checking command: ${file}`);
       if (!command.data) {
-        console.error(`Command ${file} has no 'data' property.`);
+        console.error(`Command ${file} has no 'data' property`);
         continue; // Skip this command if 'data' is missing
       }
 
-      console.log(`Command ${file} data:`, command.data); // Log the command data for debugging
+      console.log(commandsPath)
 
       const json = command.data.toJSON();
 
-      // Categorize based on the `category` property
-      if (command.category === "admin") {
-        adminCommands.push(json);
-      } else {
+      if (commandsPath.endsWith('public')) {
         publicCommands.push(json);
+      } else if (commandsPath.endsWith('admin')) {
+        adminCommands.push(json);
       }
-    } catch (error) {
-      console.error(`Error loading command from ${compiledFilePath}:`, error);
     }
   }
 
@@ -49,13 +62,18 @@ export default async function loadCommands() {
     });
 
     await rest.put(
-      Routes.applicationGuildCommands(process.env.ClientID!, process.env.MainGuild!),
+      Routes.applicationGuildCommands(
+        process.env.ClientID!,
+        process.env.MainGuild!
+      ),
       {
         body: adminCommands,
       }
     );
 
-    console.log("✅ Successfully reloaded application (/) commands.");
+    console.log(`✅ Successfully reloaded application (/) ${adminCommands.length + publicCommands.length} commands.`);
+    console.log(`Launched ${publicCommands.length} public ${publicCommands.length == 1 ? 'command' : 'commands'}`);
+    console.log(`Launched ${adminCommands.length} admin ${adminCommands.length == 1 ? 'command' : 'commands'}`);
   } catch (error) {
     console.error("❌ Failed to reload commands:", error);
   }

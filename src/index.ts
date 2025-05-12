@@ -2,7 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 import { Client, Collection, GatewayIntentBits } from "discord.js";
 import dotenv from "dotenv";
-import { pathToFileURL } from "url";
 import loadCommands from "#loadCommands";
 import log from "consola";
 
@@ -52,7 +51,7 @@ async function LoadCmd() {
   }
 
   // Load events from /events
-  const eventsPath = path.join(__dirname, "events");
+  const eventsPath = path.join(__dirname, "base", "events");
   const eventFiles = fs
     .readdirSync(eventsPath)
     .filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
@@ -79,12 +78,6 @@ async function LoadCmd() {
 loadCommands();
 
 LoadCmd();
-
-client.on('ready', () => {
-    if (client.user) {
-        log.success(`Logged in as ${client.user.tag}`)
-    }   
-})
 
 // Log in to Discord
 client.login(process.env.Token);
