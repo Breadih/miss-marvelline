@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2024",
+    "module": "CommonJS",
+    "lib": ["ES2024", "DOM"],
+    "outDir": "build",
+    "rootDir": "src",
+
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "strict": true,
+
+    "baseUrl": "./src",
+    "paths": {
+      "#newCommand": ["./base/commands/createCommand.ts"],
+      "#loadCommands": ["./base/services/LoadCommands.ts"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "build"]
+}

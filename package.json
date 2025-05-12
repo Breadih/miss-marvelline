@@ -4,7 +4,11 @@
   "description": "a",
   "main": "build/index.js",
   "scripts": {
-    "start": "node --env-file=.env ."
+    "start": "node --env-file=.env .",
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "dev:watch": "tsx --watch --env-file=.env src/index.ts",
+    "start:watch": "node --watch --env-file=.env ."
   },
   "keywords": [],
   "author": "",
@@ -14,8 +18,16 @@
     "chalk": "^5.4.1",
     "consola": "^3.4.2",
     "discord.js": "^14.19.3",
+    "dotenv": "^16.5.0",
     "mongodb": "^6.16.0",
     "mongoose": "^8.14.2",
     "spotify": "^0.3.0"
+  },
+  "devDependencies": {
+    "@discordjs/rest": "^2.5.0",
+    "@types/node": "^22.15.17",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
   }
 }
