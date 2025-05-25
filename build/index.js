@@ -8,6 +8,8 @@ const node_path_1 = __importDefault(require("node:path"));
 const discord_js_1 = require("discord.js");
 const dotenv_1 = __importDefault(require("dotenv"));
 const _loadCommands_1 = __importDefault(require("#loadCommands"));
+const consola_1 = __importDefault(require("consola"));
+const chalk_1 = __importDefault(require("chalk"));
 dotenv_1.default.config();
 const client = new discord_js_1.Client({
     intents: [
@@ -67,5 +69,9 @@ async function LoadCmd() {
 }
 (0, _loadCommands_1.default)();
 LoadCmd();
-// Log in to Discord
-client.login(process.env.Token);
+try {
+    client.login(process.env.Token);
+}
+catch {
+    consola_1.default.fail(`An invalid Discord Bot Token was provided, please review the token. Token sent: ${chalk_1.default.bold(process.env.Token)}`);
+}
