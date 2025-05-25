@@ -4,6 +4,7 @@ import { Client, Collection, GatewayIntentBits } from "discord.js";
 import dotenv from "dotenv";
 import loadCommands from "#loadCommands";
 import log from "consola";
+import chalk from "chalk";
 
 
 dotenv.config();
@@ -79,5 +80,9 @@ loadCommands();
 
 LoadCmd();
 
-// Log in to Discord
+try {
 client.login(process.env.Token);
+
+} catch {
+  log.fail(`An invalid Discord Bot Token was provided, please review the token. Token sent: ${chalk.bold(process.env.Token)}`)
+}
