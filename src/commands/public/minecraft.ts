@@ -64,7 +64,7 @@ export default new Command({
       });
 
       const detailsText = new TextDisplayBuilder({
-        content: `### 🔍 User Details\n${codeBlock("json", JSON.stringify(minecraftData, null, 2))}`
+        content: `**Name**: \`${minecraftData.name}\`\n**Id**: \`${minecraftData.id}\``,
       });
 
       const container = new ContainerBuilder({
