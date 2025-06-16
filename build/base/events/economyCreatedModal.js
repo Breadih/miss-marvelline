@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
-const economy_1 = __importDefault(require("schema/economy"));
+const economy_1 = __importDefault(require("../../schema/economy"));
 exports.default = {
     name: discord_js_1.Events.InteractionCreate,
     async execute(interaction) {

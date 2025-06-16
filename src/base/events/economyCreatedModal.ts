@@ -5,7 +5,7 @@ import {
   Colors,
   MessageFlags,
 } from "discord.js";
-import economy from "schema/economy";
+import economy from "../../schema/economy";
 
 export default {
   name: Events.InteractionCreate,
