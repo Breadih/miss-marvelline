@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node --env-file=.env .",
     "dev": "tsx src/index.ts",
-    "build": "rmdir /s /q build && tsc && echo Successfully created a new Build.",
+    "build": "rm -rf build && tsc && echo Successfully created a new Build.",
     "dev:watch": "tsx --watch --env-file=.env src/index.ts",
     "start:watch": "node --watch --env-file=.env ."
   },
