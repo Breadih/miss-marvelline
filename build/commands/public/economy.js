@@ -6,62 +6,188 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const _newCommand_1 = __importDefault(require("#newCommand"));
 const _colours_1 = require("#colours");
-const discord_js_2 = require("discord.js");
 const economy_1 = __importDefault(require("../../schema/economy"));
 exports.default = new _newCommand_1.default({
     data: new discord_js_1.SlashCommandBuilder()
         .setName("economy")
         .setDescription("Economy related commands.")
-        .addSubcommand((subcommand) => subcommand
+        .addSubcommand((sub) => sub
         .setName("balance")
         .setDescription("Check your or another user's balance.")
         .addUserOption((option) => option
         .setName("user")
         .setDescription("The user to check the balance of.")
         .setRequired(false)))
-        .addSubcommand((subcommand) => subcommand
-        .setName("create")
-        .setDescription("Create an economy for your server.")),
+        .addSubcommand((sub) => sub.setName("create").setDescription("Create an economy for your server."))
+        .addSubcommand((sub) => sub
+        .setName("donate")
+        .setDescription("Donate coins to another user.")
+        .addUserOption((option) => option
+        .setName("target")
+        .setDescription("User to donate to.")
+        .setRequired(true))
+        .addIntegerOption((option) => option
+        .setName("value")
+        .setDescription("Amount to donate.")
+        .setRequired(true))),
     async execute(interaction) {
         await interaction.deferReply();
         if (!interaction.guild) {
             await interaction.editReply("This command can only be used in a server.");
             return;
         }
-        const subcommand = interaction.options.getSubcommand();
-        switch (subcommand) {
+        const sub = interaction.options.getSubcommand();
+        const guildId = interaction.guild.id;
+        const user = interaction.user;
+        switch (sub) {
             case "create": {
-                if (interaction.guild.ownerId != interaction.user.id) {
+                if (interaction.guild.ownerId !== user.id) {
                     await interaction.editReply("Only the server owner can create an economy.");
                     return;
                 }
                 try {
-                    const existingEconomy = await economy_1.default.findOne({ GuildID: interaction.guild.id });
-                    if (existingEconomy) {
+                    const exists = await economy_1.default.findOne({ GuildID: guildId });
+                    if (exists) {
                         await interaction.editReply({
-                            embeds: [new discord_js_1.EmbedBuilder().setColor(discord_js_1.Colors.Red).setDescription("An economy already exists for this server.")],
+                            embeds: [
+                                new discord_js_1.EmbedBuilder()
+                                    .setColor(discord_js_1.Colors.Red)
+                                    .setDescription("An economy already exists for this server."),
+                            ],
                         });
                         return;
                     }
+                    const embed = new discord_js_1.EmbedBuilder()
+                        .setColor(_colours_1.colors.MainColour)
+                        .setDescription(`Hey! Welcome to the economy system!\n\n📈 **Rate System**: Your economy starts with a rate of 0.5 (1 = best, 0 = worst).\n👑 **Goal**: Build your economy and compete with other servers.\n\nClick the button below to begin.`);
+                    const button = new discord_js_1.ButtonBuilder()
+                        .setCustomId(`economy_create:${guildId}`)
+                        .setLabel("Create Economy")
+                        .setStyle(discord_js_1.ButtonStyle.Primary);
+                    const row = new discord_js_1.ActionRowBuilder().addComponents(button);
+                    await interaction.editReply({ embeds: [embed], components: [row] });
                 }
-                catch {
+                catch (err) {
+                    console.error("Create economy error:", err);
                     await interaction.editReply({
-                        embeds: [new discord_js_1.EmbedBuilder().setColor(discord_js_1.Colors.Red).setDescription("An error occurred while checking the economy.")],
+                        embeds: [
+                            new discord_js_1.EmbedBuilder()
+                                .setColor(discord_js_1.Colors.Red)
+                                .setDescription("An error occurred while creating the economy."),
+                        ],
                     });
+                }
+                break;
+            }
+            case "balance": {
+                const target = interaction.options.getUser("user") || user;
+                try {
+                    const data = await economy_1.default.findOne({ GuildID: guildId });
+                    if (!data) {
+                        await interaction.editReply({
+                            embeds: [
+                                new discord_js_1.EmbedBuilder()
+                                    .setColor(discord_js_1.Colors.Red)
+                                    .setDescription("No economy found for this server."),
+                            ],
+                        });
+                        return;
+                    }
+                    let entry = data.balance.find(b => b.userId === target.id);
+                    if (!entry) {
+                        entry = { userId: target.id, balance: 0, position: "Not ranked" };
+                        data.balance.push(entry);
+                        await data.save();
+                    }
+                    const embed = new discord_js_1.EmbedBuilder()
+                        .setColor(_colours_1.colors.MainColour)
+                        .setTitle(`${target.username}'s Balance`)
+                        .setThumbnail(target.displayAvatarURL({ size: 512 }))
+                        .addFields({
+                        name: "Balance",
+                        value: `${entry.balance} ${data.coinName || "Coins"}`,
+                        inline: true,
+                    }, {
+                        name: "Position",
+                        value: entry.position || "Not ranked",
+                        inline: true,
+                    });
+                    await interaction.editReply({ embeds: [embed] });
+                }
+                catch (err) {
+                    console.error("Balance error:", err);
+                    await interaction.editReply({
+                        embeds: [
+                            new discord_js_1.EmbedBuilder()
+                                .setColor(discord_js_1.Colors.Red)
+                                .setDescription("An error occurred while fetching the balance."),
+                        ],
+                    });
+                }
+                break;
+            }
+            case "donate": {
+                const target = interaction.options.getUser("target", true);
+                const amount = interaction.options.getInteger("value", true);
+                if (target.id === user.id) {
+                    await interaction.editReply("You can't donate to yourself.");
                     return;
                 }
-                const embedIntroduction = new discord_js_1.EmbedBuilder()
-                    .setDescription(`Hey! Welcome to the economy system! In this system, you'll be held responsible to make your economy work and be the best. The rules are simple:\n* Current Rate: \n  * Each person that starts the economy, will have a rate of 0.5, being **1 the highest, therefore the best** currency, and **0, the worst economy**. Your server members must work in order to make the server economy the best.\n * Compare your Guild Coin to others: \n  * In the meanwhile you build your empire in your server, you might wanna take a look in comparing economies (so then you can flex to your friends :3) about how good your economy is, or not :p. `)
-                    .setColor(_colours_1.colors.MainColour);
-                const button = new discord_js_1.ButtonBuilder()
-                    .setCustomId("economy_create:" + interaction.guild.id)
-                    .setLabel("Create Economy")
-                    .setStyle(discord_js_2.ButtonStyle.Primary);
-                const ActionRow = new discord_js_1.ActionRowBuilder().addComponents(button);
-                await interaction.editReply({
-                    embeds: [embedIntroduction],
-                    components: [ActionRow.toJSON()],
-                });
+                if (target.bot) {
+                    await interaction.editReply("You can't donate to bots.");
+                    return;
+                }
+                try {
+                    const data = await economy_1.default.findOne({ GuildID: guildId });
+                    if (!data) {
+                        await interaction.editReply({
+                            embeds: [
+                                new discord_js_1.EmbedBuilder()
+                                    .setColor(discord_js_1.Colors.Red)
+                                    .setDescription("No economy found for this server."),
+                            ],
+                        });
+                        return;
+                    }
+                    const sender = data.balance.find(b => b.userId === user.id);
+                    if (!sender || sender.balance < amount) {
+                        await interaction.editReply({
+                            embeds: [
+                                new discord_js_1.EmbedBuilder()
+                                    .setColor(discord_js_1.Colors.Yellow)
+                                    .setDescription("You don't have enough balance to donate."),
+                            ],
+                        });
+                        return;
+                    }
+                    let recipient = data.balance.find(b => b.userId === target.id);
+                    if (!recipient) {
+                        recipient = { userId: target.id, balance: amount, position: "Not ranked" };
+                        data.balance.push(recipient);
+                    }
+                    else {
+                        recipient.balance += amount;
+                    }
+                    sender.balance -= amount;
+                    await data.save();
+                    try {
+                        const dmEmbed = new discord_js_1.EmbedBuilder()
+                            .setColor(discord_js_1.Colors.Green)
+                            .setDescription(`🎁 ${user.globalName || user.username} has donated **${amount} ${data.coinName || "Coins"}** to you!`);
+                        await target.send({ embeds: [dmEmbed] });
+                    }
+                    catch {
+                        console.warn(`Failed to DM ${target.tag}`);
+                    }
+                    const confirmEmbed = new discord_js_1.EmbedBuilder()
+                        .setColor(discord_js_1.Colors.Green)
+                        .setDescription(`You successfully donated **${amount} ${data.coinName || "Coins"}** to ${target.globalName || target.username}.`);
+                    await interaction.editReply({ embeds: [confirmEmbed] });
+                }
+                catch (err) {
+                    console.error("Donate error:", err);
+                    await interaction.editReply("An error occurred while processing your donation.");
+                }
                 break;
             }
         }
