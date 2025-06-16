@@ -17,6 +17,21 @@ const Facts = [
   "By 2023, Discord had more than 140 million active monthly users and an estimated average of 26.5 million users per day!",
   "I was born to make your server smarter, sassier, and better managed 💅.",
   "My developers give me new powers every other day. I'm basically a coding lab rat—but cute.",
+  "I can help you with moderation, fun commands, and even some utilities to make your server shine!",
+  "Did you know? I can also play music, manage roles, and even tell you jokes! (But no promises on the jokes being good.)",
+  "I love helping out in servers, but I also love a good meme. Send me your best ones!",
+  "I can respond to commands in multiple languages, so feel free to chat with me in your preferred language!",
+  "I was designed to be user-friendly, so even if you're new to Discord bots, you can easily use me!",
+  "I can help you set up polls, giveaways, and even trivia games in your server!",
+  "I can also help you manage your server's economy system, if you have one!",
+  "I can provide you with server statistics, like member counts and activity levels!",
+  "I can also help you with server announcements, reminders, and even event management!",
+  "I can help you with server security, like setting up verification levels and anti-spam measures!",
+  "I can also help you with server customization, like setting up welcome messages and custom emojis!",
+  "I can help you with server moderation, like setting up rules and guidelines for your members!",
+  "I can also help you with server engagement, like setting up fun events and activities for your members!",
+  "I can help you with server growth, like setting up invite tracking and member retention strategies!",
+  "I can also help you with server analytics, like tracking member activity and engagement levels!",
 ];
 
 function formatUptime(ms: number) {
@@ -64,8 +79,7 @@ export default new Command({
           value:
             `[bread x](https://discord.com/users/901562525294927932)\n` +
             `[kokogamerpl](https://discord.com/users/1007651973404835954)\n` +
-            `[fusionvr](https://discord.com/users/931938914959228948)\n` +
-            `[olliebobsg](https://discord.com/users/739472626312806461)`,
+            `[fusionvr](https://discord.com/users/931938914959228948)\n`,
           inline: true,
         },
         { name: "Uptime", value: formatUptime(client.uptime ?? 0), inline: true },

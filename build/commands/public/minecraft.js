@@ -40,7 +40,7 @@ exports.default = new _newCommand_1.default({
                 spacing: discord_js_1.SeparatorSpacingSize.Large
             });
             const detailsText = new discord_js_1.TextDisplayBuilder({
-                content: `### 🔍 User Details\n${(0, discord_js_1.codeBlock)("json", JSON.stringify(minecraftData, null, 2))}`
+                content: `**Name**: \`${minecraftData.name}\`\n**Id**: \`${minecraftData.id}\``,
             });
             const container = new discord_js_1.ContainerBuilder({
                 accent_color: discord_js_1.Colors.Green,
