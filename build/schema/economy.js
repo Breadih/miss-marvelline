@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 // Balance sub-schema
 const balanceSchema = new mongoose_1.Schema({
-    userId: { type: String, required: true, unique: true },
+    userId: { type: String, required: true },
     balance: { type: Number, required: true },
     position: { type: String }
 });
